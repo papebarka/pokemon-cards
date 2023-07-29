@@ -2,7 +2,7 @@
 import Card from './components/Card.vue'
 
 const api = 'https://pokeapi.co/api/v2/pokemon'
-const ids = [1, 3, 5]
+const pokemonIds = [1, 3, 5]
 
 export default{
   components: {
@@ -11,12 +11,13 @@ export default{
 
   data(){
     return {
-      pokemons: []
+      pokemons: [],
+      evolutions: []
     }
   },
 
-  created(){
-    this.fetchData()
+  async created(){
+    this.pokemons = await this.fetchData(pokemonIds)
   },
 
   methods: {
@@ -31,7 +32,11 @@ export default{
       }
     },
 
-    async fetchData(){
+    async fetchEvolutions(pokemon){
+      this.evolutions = await this.fetchData([pokemon.id + 1, pokemon.id + 2])
+    },
+
+    async fetchData(ids){
       const responses = await Promise.all(
         ids.map(id => window.fetch(`${api}/${id}`))
       )
@@ -40,7 +45,7 @@ export default{
         responses.map(data => data.json())
       )
 
-      this.pokemons = json.map(datum => ({
+      return json.map(datum => ({
         id: datum.id,
         name: datum.name,
         sprite: datum.sprites.other['official-artwork'].front_default,
@@ -57,7 +62,30 @@ export default{
   <div class="cards">
     <card
       v-for="pokemon in pokemons"
-      :key="pokemon.id">
+      :key="pokemon.id"
+      @click="fetchEvolutions(pokemon)">
+
+      <template v-slot:title>
+        {{ pokemon.title }}
+      </template>
+
+      <template v-slot:content>
+        <img :src="pokemon.sprite" />
+      </template>
+
+      <template v-slot:description>
+        <div v-for="type in pokemon.types" :key="type">
+          {{ type }}
+        </div>
+      </template>
+    </card>
+  </div>
+
+  <div class="cards">
+    <card
+      v-for="pokemon in evolutions"
+      :key="pokemon.id"
+      @click="fetchEvolutions(pokemon)">
 
       <template v-slot:title>
         {{ pokemon.title }}

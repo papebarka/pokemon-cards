@@ -20,9 +20,6 @@ export default{
       <slot name="description" />
     </div>
 
-    <button @click="fetchData">
-      Fetch
-    </button>
   </div>
 </template>
 
