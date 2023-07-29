@@ -12,7 +12,8 @@ export default{
   data(){
     return {
       pokemons: [],
-      evolutions: []
+      evolutions: [],
+      selectedId: null
     }
   },
 
@@ -34,6 +35,7 @@ export default{
 
     async fetchEvolutions(pokemon){
       this.evolutions = await this.fetchData([pokemon.id + 1, pokemon.id + 2])
+      this.selectedId = pokemon.id
     },
 
     async fetchData(ids){
@@ -63,6 +65,8 @@ export default{
     <card
       v-for="pokemon in pokemons"
       :key="pokemon.id"
+      :class="{opace: pokemon.id !== this.selectedId}"
+      class="card"
       @click="fetchEvolutions(pokemon)">
 
       <template v-slot:title>
@@ -112,5 +116,13 @@ export default{
 
 img{
   width: 100%;
+}
+
+.opace {
+  opacity: 0.5;
+}
+
+.card:hover{
+  opacity: 1.0;
 }
 </style>
